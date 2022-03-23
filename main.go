@@ -45,7 +45,7 @@ func launch(ctx context.Context) error {
 
 	srv := service.New(ctx, st)
 
-	nats, err := controller.NewNats(ctx, srv)
+	nats, err := controller.NewNats(ctx, srv, log.Default())
 	if err != nil {
 		return errors.Wrap(err, "controller.nats")
 	}

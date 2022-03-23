@@ -2,11 +2,12 @@ package controller
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"time"
 
 	stan "github.com/nats-io/stan.go"
 	"github.com/pgeowng/wb-l0/config"
+	"github.com/pgeowng/wb-l0/model"
 	"github.com/pgeowng/wb-l0/service"
 )
 
@@ -15,9 +16,10 @@ type NatsController struct {
 	sub stan.Subscription
 
 	srv service.OrderService
+	log *log.Logger
 }
 
-func NewNats(ctx context.Context, srv service.OrderService) (nats *NatsController, err error) {
+func NewNats(ctx context.Context, srv service.OrderService, log *log.Logger) (nats *NatsController, err error) {
 	cfg := config.Get()
 
 	sc, err := stan.Connect(cfg.NatsClusterId, cfg.NatsClientId, stan.ConnectWait(10*time.Second))
@@ -25,7 +27,12 @@ func NewNats(ctx context.Context, srv service.OrderService) (nats *NatsControlle
 		return
 	}
 
-	n := &NatsController{sc: sc}
+	n := &NatsController{
+		sc:  sc,
+		srv: srv,
+		log: log,
+	}
+
 	sub, err := sc.Subscribe(cfg.NatsSubject, n.Handler)
 	if err != nil {
 		sc.Close()
@@ -43,5 +50,18 @@ func (c *NatsController) Close() {
 }
 
 func (c *NatsController) Handler(m *stan.Msg) {
-	fmt.Printf("Received a message: %s\n", string(m.Data))
+	order := model.Order{}
+	err := order.FromJSONBuffer(m.Data)
+	if err != nil {
+		log.Printf("bad json: %s\n%s", err, string(m.Data))
+		return
+	}
+
+	err = order.Validate()
+	if err != nil {
+		log.Printf("not valid: %s", err)
+		return
+	}
+
+	log.Println(order)
 }
