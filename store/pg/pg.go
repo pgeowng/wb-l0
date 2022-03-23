@@ -37,22 +37,22 @@ func (db *DB) Reset(ctx context.Context) error {
 
 	_, err := db.NewCreateTable().Model((*DBDelivery)(nil)).Exec(ctx)
 	if err != nil {
-		return errors.Wrap(err, "post.pg.create")
+		return errors.Wrap(err, "pg.create")
 	}
 
 	_, err = db.NewCreateTable().Model((*DBPayment)(nil)).Exec(ctx)
 	if err != nil {
-		return errors.Wrap(err, "post.pg.create")
+		return errors.Wrap(err, "pg.create")
 	}
 
 	_, err = db.NewCreateTable().Model((*DBItem)(nil)).Exec(ctx)
 	if err != nil {
-		return errors.Wrap(err, "post.pg.create")
+		return errors.Wrap(err, "pg.create")
 	}
 
 	_, err = db.NewCreateTable().Model((*DBOrder)(nil)).Exec(ctx)
 	if err != nil {
-		return errors.Wrap(err, "post.pg.create")
+		return errors.Wrap(err, "pg.create")
 	}
 
 	return nil

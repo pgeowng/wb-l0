@@ -20,7 +20,7 @@ type RestoreRepo interface {
 
 type QueryRepo interface {
 	InsertRepo
-	GetOrder(context.Context, string) (*model.Order, error)
+	GetOrder(context.Context, string) ([]byte, error)
 	GetIds(context.Context) ([]string, error)
 	Recover(context.Context, []*model.Order) error
 }

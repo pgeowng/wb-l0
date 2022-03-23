@@ -10,7 +10,7 @@ import (
 
 type OrderService interface {
 	Create(context.Context, *model.Order) error
-	GetOrder(context.Context, string) (*model.Order, error)
+	GetOrder(context.Context, string) ([]byte, error)
 	GetIds(context.Context) ([]string, error)
 }
 
@@ -25,16 +25,25 @@ func New(ctx context.Context, store *store.Store) OrderService {
 func (srv *OrderServiceImpl) Create(ctx context.Context, order *model.Order) error {
 	err := srv.store.DB.Insert(ctx, order)
 	if err != nil {
-		return errors.Wrap(err, "srv.create")
+		return errors.Wrap(err, "srv.create.db")
+	}
+
+	err = srv.store.Cache.Insert(ctx, order)
+	if err != nil {
+		return errors.Wrap(err, "srv.create.cache")
 	}
 
 	return nil
 }
 
-func (srv *OrderServiceImpl) GetOrder(ctx context.Context, id string) (order *model.Order, err error) {
+func (srv *OrderServiceImpl) GetOrder(ctx context.Context, id string) (result []byte, err error) {
+	result, err = srv.store.Cache.GetOrder(ctx, id)
+	err = errors.Wrap(err, "srv")
 	return nil, nil
 }
 
 func (srv *OrderServiceImpl) GetIds(ctx context.Context) (ids []string, err error) {
-	return nil, nil
+	ids, err = srv.store.Cache.GetIds(ctx)
+	err = errors.Wrap(err, "srv")
+	return
 }
