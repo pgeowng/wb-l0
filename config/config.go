@@ -13,6 +13,9 @@ type Config struct {
 	NatsClusterId string `envconfig:"NATS_CLUSTER_ID"`
 	NatsClientId  string `envconfig:"NATS_CLIENT_ID"`
 	NatsSubject   string `envconfig:"NATS_SUBJECT"`
+
+	PgDSN   string `envconfig:"PG_DSN"`
+	PgReset bool   `envconfig:"PG_RESET"`
 }
 
 var (

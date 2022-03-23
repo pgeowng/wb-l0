@@ -64,4 +64,11 @@ func (c *NatsController) Handler(m *stan.Msg) {
 	}
 
 	log.Println(order)
+
+	ctx := context.Background()
+	err = c.srv.Create(ctx, &order)
+	if err != nil {
+		log.Printf("not valid: %s", err)
+		return
+	}
 }

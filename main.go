@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/pgeowng/wb-l0/config"
 	"github.com/pgeowng/wb-l0/controller"
 	"github.com/pgeowng/wb-l0/service"
 	"github.com/pgeowng/wb-l0/store"
@@ -41,6 +42,13 @@ func launch(ctx context.Context) error {
 	st, err := store.New(ctx)
 	if err != nil {
 		return errors.Wrap(err, "store.init")
+	}
+
+	if config.Get().PgReset {
+		err = st.DB.Reset(ctx)
+		if err != nil {
+			return errors.Wrap(err, "store.pg.reset")
+		}
 	}
 
 	srv := service.New(ctx, st)

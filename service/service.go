@@ -5,6 +5,7 @@ import (
 
 	"github.com/pgeowng/wb-l0/model"
 	"github.com/pgeowng/wb-l0/store"
+	"github.com/pkg/errors"
 )
 
 type OrderService interface {
@@ -22,6 +23,11 @@ func New(ctx context.Context, store *store.Store) OrderService {
 }
 
 func (srv *OrderServiceImpl) Create(ctx context.Context, order *model.Order) error {
+	err := srv.store.DB.Insert(ctx, order)
+	if err != nil {
+		return errors.Wrap(err, "srv.create")
+	}
+
 	return nil
 }
 
