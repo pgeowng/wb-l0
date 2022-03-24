@@ -23,7 +23,7 @@ type DBItem struct {
 	bun.BaseModel `bun:"table:items,alias:i"`
 	*model.Item
 
-	OrderUid string `bun:",pk"`
+	OrderUid string `bun:",notnull"`
 }
 
 type DBOrder struct {

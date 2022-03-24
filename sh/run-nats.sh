@@ -12,7 +12,7 @@
 
 # docker pull nats-streaming
 
-docker run \
+sudo docker run \
   -p 4222:4222 \
   -p 8222:8222 \
   nats-streaming \

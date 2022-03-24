@@ -55,7 +55,17 @@ func launch(ctx context.Context) error {
 		}
 	}
 
+	err = st.DB.Ensure(ctx)
+	if err != nil {
+		return errors.Wrap(err, "store.pg.ensure")
+	}
+
 	srv := service.New(ctx, st)
+
+	err = srv.Recover(ctx)
+	if err != nil {
+		return errors.Wrap(err, "srv")
+	}
 
 	nats, err := controller.NewNats(ctx, srv, log.Default())
 	if err != nil {

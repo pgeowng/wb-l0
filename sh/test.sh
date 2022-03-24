@@ -13,5 +13,8 @@ VALID="$(cat ../model/model.json | tr '\n' ' ')"
 
 # go run "$CLIENT" -c "NATS" "$SUBJECT" '{"hello":"world"}'
 
-go run "$CLIENT" -c "NATS" "$SUBJECT" \
-  "$VALID"
+jq -c '.[]' all.json | \
+  while read line; do sleep 1; echo "$line"; done | \
+  while IFS= read -r request; do \
+    go run "$CLIENT" -c "NATS" "$SUBJECT" "$request"; \
+    done

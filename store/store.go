@@ -16,6 +16,7 @@ type RestoreRepo interface {
 	InsertRepo
 	GetAll(context.Context) ([]*model.Order, error)
 	Reset(context.Context) error
+	Ensure(context.Context) error
 }
 
 type QueryRepo interface {

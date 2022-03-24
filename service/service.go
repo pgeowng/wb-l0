@@ -12,6 +12,7 @@ type OrderService interface {
 	Create(context.Context, *model.Order) error
 	GetOrder(context.Context, string) ([]byte, error)
 	GetIds(context.Context) ([]string, error)
+	Recover(context.Context) error
 }
 
 type OrderServiceImpl struct {
@@ -46,4 +47,18 @@ func (srv *OrderServiceImpl) GetIds(ctx context.Context) (ids []string, err erro
 	ids, err = srv.store.Cache.GetIds(ctx)
 	err = errors.Wrap(err, "srv")
 	return
+}
+
+func (srv *OrderServiceImpl) Recover(ctx context.Context) error {
+	data, err := srv.store.DB.GetAll(ctx)
+	if err != nil {
+		return errors.Wrap(err, "recover.db")
+	}
+
+	err = srv.store.Cache.Recover(ctx, data)
+	if err != nil {
+		return errors.Wrap(err, "recover")
+	}
+
+	return nil
 }

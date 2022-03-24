@@ -60,6 +60,7 @@ func (c *NatsController) Handler(m *stan.Msg) {
 	err = order.Validate()
 	if err != nil {
 		log.Printf("not valid: %s", err)
+		log.Printf("struct: %#v\n", order)
 		return
 	}
 

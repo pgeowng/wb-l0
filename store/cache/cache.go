@@ -22,7 +22,7 @@ func New(ctx context.Context) (*Cache, error) {
 }
 
 func (repo *Cache) Insert(ctx context.Context, order *model.Order) error {
-	id := *order.OrderUid
+	id := order.OrderUid
 	_, ok := repo.dict[id]
 	if ok {
 		return errors.Errorf("cachemb: collision for id: %f", id)
@@ -60,7 +60,7 @@ func (repo *Cache) Recover(ctx context.Context, orders []*model.Order) error {
 	repo.keys = make([]string, 0, len(orders))
 
 	for idx := range orders {
-		id := *orders[idx].OrderUid
+		id := orders[idx].OrderUid
 		data, err := json.Marshal(orders[idx])
 		if err != nil {
 			return errors.Wrap(err, "cachemb")

@@ -30,27 +30,31 @@ func New(ctx context.Context) (*DB, error) {
 }
 
 func (db *DB) Reset(ctx context.Context) error {
-	_, _ = db.NewDropTable().Model((*DBDelivery)(nil)).Exec(ctx)
-	_, _ = db.NewDropTable().Model((*DBPayment)(nil)).Exec(ctx)
-	_, _ = db.NewDropTable().Model((*DBItem)(nil)).Exec(ctx)
-	_, _ = db.NewDropTable().Model((*DBOrder)(nil)).Exec(ctx)
+	_, _ = db.NewDropTable().Model((*DBDelivery)(nil)).IfExists().Exec(ctx)
+	_, _ = db.NewDropTable().Model((*DBPayment)(nil)).IfExists().Exec(ctx)
+	_, _ = db.NewDropTable().Model((*DBItem)(nil)).IfExists().Exec(ctx)
+	_, _ = db.NewDropTable().Model((*DBOrder)(nil)).IfExists().Exec(ctx)
 
-	_, err := db.NewCreateTable().Model((*DBDelivery)(nil)).Exec(ctx)
+	return nil
+}
+
+func (db *DB) Ensure(ctx context.Context) error {
+	_, err := db.NewCreateTable().Model((*DBDelivery)(nil)).IfNotExists().Exec(ctx)
 	if err != nil {
 		return errors.Wrap(err, "pg.create")
 	}
 
-	_, err = db.NewCreateTable().Model((*DBPayment)(nil)).Exec(ctx)
+	_, err = db.NewCreateTable().Model((*DBPayment)(nil)).IfNotExists().Exec(ctx)
 	if err != nil {
 		return errors.Wrap(err, "pg.create")
 	}
 
-	_, err = db.NewCreateTable().Model((*DBItem)(nil)).Exec(ctx)
+	_, err = db.NewCreateTable().Model((*DBItem)(nil)).IfNotExists().Exec(ctx)
 	if err != nil {
 		return errors.Wrap(err, "pg.create")
 	}
 
-	_, err = db.NewCreateTable().Model((*DBOrder)(nil)).Exec(ctx)
+	_, err = db.NewCreateTable().Model((*DBOrder)(nil)).IfNotExists().Exec(ctx)
 	if err != nil {
 		return errors.Wrap(err, "pg.create")
 	}

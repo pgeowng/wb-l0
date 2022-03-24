@@ -32,8 +32,8 @@ func (db *DB) Insert(ctx context.Context, order *model.Order) error {
 	}
 
 	delivery := &DBDelivery{
-		Delivery: order.Delivery,
-		OrderUid: *orderUid,
+		Delivery: &order.Delivery,
+		OrderUid: orderUid,
 	}
 	_, err = tx.NewInsert().Model(delivery).Exec(ctx)
 	if err != nil {
@@ -41,29 +41,31 @@ func (db *DB) Insert(ctx context.Context, order *model.Order) error {
 	}
 
 	payment := &DBPayment{
-		Payment:  order.Payment,
-		OrderUid: *orderUid,
+		Payment:  &order.Payment,
+		OrderUid: orderUid,
 	}
 	_, err = tx.NewInsert().Model(payment).Exec(ctx)
 	if err != nil {
 		return cancelTx(tx, err)
 	}
 
-	items := []DBItem{}
-	for idx := range *order.Items {
-		items = append(items, DBItem{
-			Item:     &(*order.Items)[idx],
-			OrderUid: *orderUid,
-		})
-	}
-	_, err = tx.NewInsert().Model(&items).Exec(ctx)
-	if err != nil {
-		return cancelTx(tx, err)
+	if len(order.Items) > 0 {
+		items := []DBItem{}
+		for idx := range order.Items {
+			items = append(items, DBItem{
+				Item:     &(order.Items[idx]),
+				OrderUid: orderUid,
+			})
+		}
+		_, err = tx.NewInsert().Model(&items).Exec(ctx)
+		if err != nil {
+			return cancelTx(tx, err)
+		}
 	}
 
 	dbOrder := &DBOrder{
 		Order:    order,
-		OrderUid: *orderUid,
+		OrderUid: orderUid,
 	}
 	_, err = tx.NewInsert().Model(dbOrder).Exec(ctx)
 	if err != nil {
