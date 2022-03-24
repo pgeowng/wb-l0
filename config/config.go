@@ -16,6 +16,8 @@ type Config struct {
 
 	PgDSN   string `envconfig:"PG_DSN"`
 	PgReset bool   `envconfig:"PG_RESET"`
+
+	HttpPort string `envconfig:"PORT"`
 }
 
 var (

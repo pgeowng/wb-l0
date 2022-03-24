@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/pgeowng/wb-l0/config"
 	"github.com/pgeowng/wb-l0/controller"
 	"github.com/pgeowng/wb-l0/service"
@@ -39,12 +42,13 @@ func main() {
 }
 
 func launch(ctx context.Context) error {
+	cfg := config.Get()
 	st, err := store.New(ctx)
 	if err != nil {
 		return errors.Wrap(err, "store.init")
 	}
 
-	if config.Get().PgReset {
+	if cfg.PgReset {
 		err = st.DB.Reset(ctx)
 		if err != nil {
 			return errors.Wrap(err, "store.pg.reset")
@@ -59,6 +63,16 @@ func launch(ctx context.Context) error {
 	}
 
 	defer nats.Close()
+
+	rest := controller.NewRest(ctx, srv, log.Default())
+
+	app := fiber.New()
+	app.Use(logger.New())
+	app.Get("/orders", rest.GetIds)
+	app.Get("/orders/:id", rest.GetOrder)
+	fmt.Printf("Listen on :%s\n", cfg.HttpPort)
+	go app.Listen(":" + cfg.HttpPort)
+	defer app.Shutdown()
 
 	<-ctx.Done()
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker run -it \
+sudo docker run -it \
   --rm \
   --name pg-13 \
   --network pg-network \
