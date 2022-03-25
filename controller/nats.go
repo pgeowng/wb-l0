@@ -22,7 +22,12 @@ type NatsController struct {
 func NewNats(ctx context.Context, srv service.OrderService, log *log.Logger) (nats *NatsController, err error) {
 	cfg := config.Get()
 
-	sc, err := stan.Connect(cfg.NatsClusterId, cfg.NatsClientId, stan.ConnectWait(10*time.Second))
+	urlOpt := stan.NatsURL("nats://localhost:4222")
+	if len(cfg.NatsURL) > 0 {
+		urlOpt = stan.NatsURL(cfg.NatsURL)
+	}
+
+	sc, err := stan.Connect(cfg.NatsClusterId, cfg.NatsClientId, stan.ConnectWait(10*time.Second), urlOpt)
 	if err != nil {
 		return
 	}

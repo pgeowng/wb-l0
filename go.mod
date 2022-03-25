@@ -11,12 +11,10 @@ require (
 	github.com/uptrace/bun v1.1.2
 	github.com/uptrace/bun/dialect/pgdialect v1.1.2
 	github.com/uptrace/bun/driver/pgdriver v1.1.2
-	github.com/uptrace/bun/extra/bundebug v1.1.2
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/gofiber/template v1.6.26
@@ -24,8 +22,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/nats-io/nats-server/v2 v2.7.4 // indirect
 	github.com/nats-io/nats-streaming-server v0.24.3 // indirect
 	github.com/nats-io/nats.go v1.13.1-0.20220308171302-2f2f6968e98d // indirect

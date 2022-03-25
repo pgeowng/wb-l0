@@ -29,7 +29,6 @@ type QueryRepo interface {
 type Store struct {
 	DB    RestoreRepo
 	Cache QueryRepo
-	// FileBackup InsertRepo
 }
 
 func New(ctx context.Context) (*Store, error) {

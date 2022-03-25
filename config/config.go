@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	NatsURL       string `envconfig:"NATS_URL"`
 	NatsClusterId string `envconfig:"NATS_CLUSTER_ID"`
 	NatsClientId  string `envconfig:"NATS_CLIENT_ID"`
 	NatsSubject   string `envconfig:"NATS_SUBJECT"`

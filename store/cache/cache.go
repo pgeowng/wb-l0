@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"sort"
 
 	"github.com/pgeowng/wb-l0/model"
 	"github.com/pkg/errors"
@@ -29,7 +28,6 @@ func (repo *Cache) Insert(ctx context.Context, order *model.Order) error {
 
 	repo.dict[id] = order
 	repo.keys = append(repo.keys, id)
-	sort.Strings(repo.keys)
 
 	return nil
 }
@@ -44,7 +42,12 @@ func (repo *Cache) GetOrder(ctx context.Context, id string) (result *model.Order
 }
 
 func (repo *Cache) GetIds(ctx context.Context) (ids []string, err error) {
-	return repo.keys, nil
+	result := make([]string, 0, len(repo.keys))
+	for idx := range repo.keys {
+		result = append(result, repo.keys[len(repo.keys)-idx-1])
+	}
+
+	return result, nil
 }
 
 func (repo *Cache) Recover(ctx context.Context, orders []*model.Order) error {
@@ -56,8 +59,6 @@ func (repo *Cache) Recover(ctx context.Context, orders []*model.Order) error {
 		repo.dict[id] = orders[idx]
 		repo.keys = append(repo.keys, id)
 	}
-
-	sort.Strings(repo.keys)
 
 	return nil
 }

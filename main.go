@@ -84,7 +84,6 @@ func launch(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "controller.nats")
 	}
-
 	defer nats.Close()
 
 	rest := controller.NewRest(ctx, srv, log.Default())
@@ -93,6 +92,7 @@ func launch(ctx context.Context) error {
 	engine.AddFunc("offsetInt", func(idx int, offset int) int {
 		return idx + offset
 	})
+
 	engine.AddFunc("Iterate", func(count int) []int {
 		var i int
 		var st []int
@@ -101,6 +101,7 @@ func launch(ctx context.Context) error {
 		}
 		return st
 	})
+
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
@@ -109,6 +110,7 @@ func launch(ctx context.Context) error {
 	app.Get("/orders/:id", rest.GetOrder)
 	app.Get("/:idx?", rest.IndexPage)
 	fmt.Printf("Listen on :%s\n", cfg.HttpPort)
+
 	go func() {
 		log.Println(app.Listen(":" + cfg.HttpPort))
 	}()
