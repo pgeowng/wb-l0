@@ -22,7 +22,7 @@ test_get_valid() {
   # returns: REQUEST
 
   REQUEST="$(
-    jq -c '.[]' data.json | \
+    jq -c '.[]' ./sh/data.json | \
     head -n "$1" | tail -n 1 \
   )"
 }
@@ -74,7 +74,7 @@ test_entry_mismatch() {
 }
 
 test_fill_db() {
-  jq -c '.[]' data.json | \
+  jq -c '.[]' ./sh/data.json | \
   while read line; do sleep 1; echo "$line"; done | \
   head -n 24 | \
   while IFS= read -r request; do \
