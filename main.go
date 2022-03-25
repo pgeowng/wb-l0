@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html"
 	"github.com/pgeowng/wb-l0/config"
 	"github.com/pgeowng/wb-l0/controller"
 	"github.com/pgeowng/wb-l0/service"
@@ -76,12 +77,29 @@ func launch(ctx context.Context) error {
 
 	rest := controller.NewRest(ctx, srv, log.Default())
 
-	app := fiber.New()
+	engine := html.New("./views", ".html")
+	engine.AddFunc("offsetInt", func(idx int, offset int) int {
+		return idx + offset
+	})
+	engine.AddFunc("Iterate", func(count int) []int {
+		var i int
+		var st []int
+		for i = 0; i < count; i++ {
+			st = append(st, i)
+		}
+		return st
+	})
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 	app.Use(logger.New())
+	app.Get("/list/:idx?", rest.IndexPage)
 	app.Get("/orders", rest.GetIds)
 	app.Get("/orders/:id", rest.GetOrder)
 	fmt.Printf("Listen on :%s\n", cfg.HttpPort)
-	go app.Listen(":" + cfg.HttpPort)
+	go func() {
+		log.Println(app.Listen(":" + cfg.HttpPort))
+	}()
 	defer app.Shutdown()
 
 	<-ctx.Done()
