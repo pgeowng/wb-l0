@@ -44,32 +44,33 @@ func NewNats(ctx context.Context, srv service.OrderService, log *log.Logger) (na
 	return
 }
 
-func (c *NatsController) Close() {
-	c.sub.Unsubscribe()
-	c.sc.Close()
+func (ctl *NatsController) Close() {
+	ctl.sub.Unsubscribe()
+	ctl.sc.Close()
 }
 
-func (c *NatsController) Handler(m *stan.Msg) {
-	order := model.Order{}
-	err := order.FromJSONBuffer(m.Data)
+func (ctl *NatsController) Handler(m *stan.Msg) {
+	var order model.Order
+	msg := m.Data
+	err := order.FromJSONBuffer(msg)
 	if err != nil {
-		log.Printf("bad json: %s\n%s", err, string(m.Data))
+		ctl.log.Printf("nats.parse: %s", err)
+		ctl.log.Printf("msg: %s\n", string(m.Data))
 		return
 	}
 
 	err = order.Validate()
 	if err != nil {
-		log.Printf("not valid: %s", err)
-		log.Printf("struct: %#v\n", order)
+		ctl.log.Printf("nats.validate: %s\n", err)
+		ctl.log.Printf("msg: %s\n", string(m.Data))
 		return
 	}
 
-	log.Println(order)
-
 	ctx := context.Background()
-	err = c.srv.Create(ctx, &order)
+	err = ctl.srv.Create(ctx, &order)
 	if err != nil {
-		log.Printf("not valid: %s", err)
+		ctl.log.Printf("nats.create: %s\n", err)
+		ctl.log.Printf("msg: %s\n", string(msg))
 		return
 	}
 }

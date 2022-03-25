@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -38,13 +37,13 @@ func (ctl *RestController) GetOrder(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Context().SetContentType("application/json")
-	return c.Send(result)
+	return c.JSON(result)
 }
 
 func (ctl *RestController) GetIds(c *fiber.Ctx) error {
 	ctx := c.UserContext()
 	result, err := ctl.srv.GetIds(ctx)
+
 	if err != nil {
 		ctl.log.Print("err", err)
 		c.SendStatus(500)
@@ -52,8 +51,6 @@ func (ctl *RestController) GetIds(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-
-	ctl.log.Print(result)
 
 	return c.JSON(result)
 }
@@ -91,18 +88,10 @@ func (ctl *RestController) IndexPage(c *fiber.Ctx) error {
 	}
 
 	idList := result[leftBound:rightBound]
-	orderList := make([]model.Order, 0, len(idList))
+	orderList := make([]*model.Order, 0, len(idList))
 
 	for _, id := range idList {
-		orderBytes, err := ctl.srv.GetOrder(ctx, id)
-		if err != nil {
-			c.SendStatus(500)
-			return c.JSON(map[string]interface{}{
-				"error": err.Error(),
-			})
-		}
-		var order model.Order
-		err = json.Unmarshal(orderBytes, &order)
+		order, err := ctl.srv.GetOrder(ctx, id)
 		if err != nil {
 			c.SendStatus(500)
 			return c.JSON(map[string]interface{}{

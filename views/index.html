@@ -19,7 +19,7 @@
                     <a
                         class="nav-link {{ if eq $scope.pageIndex $val }} active {{- end -}}"
                         aria-current="page"
-                        href="/list/{{$val}}"
+                        href="/{{$val}}"
                         >{{$val}}</a
                     >{{end}}
                 </nav>
@@ -45,7 +45,11 @@
                     <tbody>
                         {{range $i, $a := .orderList}}
                         <tr>
-                            <th scope="row">{{offsetInt $i $scope.offset}}</th>
+                            <th scope="row">
+                                <a href="/orders/{{$a.OrderUid}}"
+                                    >{{offsetInt $i $scope.offset}}</a
+                                >
+                            </th>
                             <td>{{$a.OrderUid}}</td>
                             <td>{{$a.TrackNumber}}</td>
                             <td>{{$a.Entry}}</td>

@@ -18,6 +18,7 @@ type Config struct {
 	PgReset bool   `envconfig:"PG_RESET"`
 
 	HttpPort string `envconfig:"PORT"`
+	LogFile  string `envconfig:"LOG_FILE"`
 }
 
 var (

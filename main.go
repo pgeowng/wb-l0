@@ -68,7 +68,19 @@ func launch(ctx context.Context) error {
 		return errors.Wrap(err, "srv")
 	}
 
-	nats, err := controller.NewNats(ctx, srv, log.Default())
+	llog := log.Default()
+
+	if len(cfg.LogFile) > 0 {
+		f, err := os.OpenFile(cfg.LogFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+
+		llog.SetOutput(f)
+	}
+
+	nats, err := controller.NewNats(ctx, srv, llog)
 	if err != nil {
 		return errors.Wrap(err, "controller.nats")
 	}
@@ -93,9 +105,9 @@ func launch(ctx context.Context) error {
 		Views: engine,
 	})
 	app.Use(logger.New())
-	app.Get("/list/:idx?", rest.IndexPage)
 	app.Get("/orders", rest.GetIds)
 	app.Get("/orders/:id", rest.GetOrder)
+	app.Get("/:idx?", rest.IndexPage)
 	fmt.Printf("Listen on :%s\n", cfg.HttpPort)
 	go func() {
 		log.Println(app.Listen(":" + cfg.HttpPort))

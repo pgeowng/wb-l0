@@ -9,5 +9,6 @@ export PG_RESET="false"
 # export PG_RESET="true"
 
 export PORT="1318"
+export LOG_FILE="logfile"
 
 go run .
