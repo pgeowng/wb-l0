@@ -10,8 +10,30 @@ import (
 )
 
 func (db *DB) GetAll(ctx context.Context) (result []*model.Order, err error) {
+	var dbResult []DBOrder
+	err = db.NewSelect().
+		Model(&dbResult).
+		Relation("Delivery").
+		Relation("Payment").
+		Relation("Items").
+		Scan(ctx)
 
-	return nil, nil
+	result = make([]*model.Order, 0, len(dbResult))
+	for idx := range dbResult {
+		dbOrder := dbResult[idx]
+		order := dbOrder.Order
+		order.OrderUid = dbOrder.OrderUid
+		result = append(result, order)
+		order.Delivery = *dbOrder.Delivery.Delivery
+		order.Payment = *dbOrder.Payment.Payment
+		order.Items = make([]model.Item, 0, len(dbOrder.Items))
+
+		for jdx := range dbOrder.Items {
+			order.Items = append(order.Items, *dbOrder.Items[jdx].Item)
+		}
+	}
+
+	return
 }
 
 func cancelTx(tx bun.Tx, err error) error {

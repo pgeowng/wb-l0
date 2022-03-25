@@ -41,7 +41,6 @@ func (repo *Cache) Insert(ctx context.Context, order *model.Order) error {
 }
 
 func (repo *Cache) GetOrder(ctx context.Context, id string) (result []byte, err error) {
-
 	data, ok := repo.dict[id]
 	if !ok {
 		return nil, errors.New("not found")
@@ -55,7 +54,6 @@ func (repo *Cache) GetIds(ctx context.Context) (ids []string, err error) {
 }
 
 func (repo *Cache) Recover(ctx context.Context, orders []*model.Order) error {
-
 	repo.dict = make(map[string][]byte, len(orders))
 	repo.keys = make([]string, 0, len(orders))
 

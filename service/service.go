@@ -40,7 +40,7 @@ func (srv *OrderServiceImpl) Create(ctx context.Context, order *model.Order) err
 func (srv *OrderServiceImpl) GetOrder(ctx context.Context, id string) (result []byte, err error) {
 	result, err = srv.store.Cache.GetOrder(ctx, id)
 	err = errors.Wrap(err, "srv")
-	return nil, nil
+	return
 }
 
 func (srv *OrderServiceImpl) GetIds(ctx context.Context) (ids []string, err error) {
